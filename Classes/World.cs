@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TurnBasedGame
+namespace TurnBasedGame.Classes
 {
     internal class World
     {
