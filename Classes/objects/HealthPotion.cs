@@ -1,25 +1,71 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using TurnBasedGame.Classes.Logging;
 
-namespace TurnBasedGame.Classes.objects
+namespace TurnBasedGame.Classes.Objects
 {
-    public class HealthPotion : WorldObject
+    /// <summary>
+    /// Healing item that restores health points when consumed.
+    /// </summary>
+    public class HealthPotion : WorldObject, IConsumable
     {
-        public int HealingAmount { get; set; }
+        private readonly ILogger _logger;
 
-        public HealthPotion(int x, int y, string name, int healingAmount)
-            : base(x, y, name, true, true)  // lootable and will be removed after use
+        /// <summary>
+        /// Amount of health points restored by the potion.
+        /// </summary>
+        public int HealAmount { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the HealthPotion class.
+        /// </summary>
+        /// <param name="position">X and Y position on the game field.</param>
+        /// <param name="name">Name of the potion.</param>
+        /// <param name="healAmount">Amount of health points restored when used.</param>
+        /// <param name="logger">Logger used for game events.</param>
+        public HealthPotion((int x, int y) position, string name, int healAmount, ILogger logger)
+            : base(position, name, true, true, logger)
         {
-            HealingAmount = healingAmount;
+            HealAmount = healAmount;
+            _logger = logger;
+
+            //_logger.Log(LogLevel.Debug, $"Created {name} at {position}");
         }
 
-        public override void Interact()
+        /// <summary>
+        /// Interacts with the potion, triggering its consumption.
+        /// </summary>
+        public void Interact()
         {
-            Console.WriteLine($"{Name} heals for {HealingAmount} HP and disappears.");
+            _logger.Log(LogLevel.Info, $"Using {Name} (+{HealAmount} HP)");
+            ExecuteInteraction();
+        }
+
+        /// <summary>
+        /// Consumes the potion.
+        /// </summary>
+        public void Consume()
+        {
+            _logger.Log(LogLevel.Debug, $"Consumed {Name}");
+            
+        }
+
+        /// <summary>
+        /// Executes the potion's interaction logic (consumption).
+        /// </summary>
+        protected override void ExecuteInteraction()
+        {
+            Consume();
         }
     }
 
+    /// <summary>
+    /// Interface for consumable items that can be used up.
+    /// </summary>
+    public interface IConsumable
+    {
+        /// <summary>
+        /// Triggers the consumption logic of the item.
+        /// </summary>
+        void Consume();
+    }
 }
